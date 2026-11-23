@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Patrícia Correia Cassimo — Tradutora Ajuramentada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4EDE4; --paper-2:#ECE2D6; --paper-3:#E3D6C6;
+  --ink:#2B1B12; --brown:#4B2F21; --muted:#7D6A5B; --gold:#A97D50; --gold-soft:#C9A77E;
+  --line:rgba(75,47,33,.16);
+  --serif:"Instrument Serif", "Cormorant Garamond", Georgia, serif;
+  --sans:"Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1); --ease-io:cubic-bezier(.76,0,.24,1);
+  --pad:clamp(20px,5vw,72px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:300;font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body.loading{overflow:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:var(--gold-soft);color:var(--ink)}
+
+/* paper grain */
+.grain{position:fixed;inset:0;pointer-events:none;z-index:90;opacity:.07;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.12 0 0 0 0 0.08 0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+
+/* monogram */
+.mono{position:relative;display:inline-block;font-family:var(--serif);line-height:.8;color:var(--brown)}
+.mono .p{display:inline-block}
+.mono .c{position:absolute;font-style:italic;color:var(--gold)}
+.mono.sm{font-size:34px;width:34px;height:34px}
+.mono.sm .p{transform:translate(-2px,1px)}
+.mono.sm .c{left:12px;top:9px}
+
+/* loader */
+.loader{position:fixed;inset:0;z-index:100;background:var(--paper);display:grid;place-items:center;transition:transform 1s var(--ease-io)}
+.loader.out{transform:translateY(-100%)}
+.loader .mono{font-size:clamp(110px,16vw,190px);width:1.1em;height:1.15em}
+.loader .p{opacity:0;transform:translateX(-30px);animation:inL .9s var(--ease) .1s forwards}
+.loader .c{left:.36em;top:.3em;opacity:0;transform:translateX(30px);animation:inR .9s var(--ease) .25s forwards}
+.loader .bar{position:absolute;left:50%;bottom:-18px;width:120px;height:1px;margin-left:-60px;background:var(--gold);transform:scaleX(0);animation:bar .9s var(--ease) .35s forwards}
+@keyframes inL{to{opacity:1;transform:none}} @keyframes inR{to{opacity:1;transform:none}} @keyframes bar{to{transform:scaleX(1)}}
+
+/* nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px var(--pad);transition:background .5s,backdrop-filter .5s,box-shadow .5s,opacity .8s var(--ease),transform .8s var(--ease)}
+body.loading .nav,.nav.pre{opacity:0;transform:translateY(-12px)}
+.nav.solid{background:rgba(244,237,228,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--line)}
+.nav .links{display:flex;gap:34px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:400}
+.nav .links a{position:relative;padding:4px 0}
+.nav .links a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:right;transition:transform .5s var(--ease)}
+.nav .links a:hover::after{transform:scaleX(1);transform-origin:left}
+.lang{display:flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:99px;padding:3px;font-size:12px;letter-spacing:.12em;font-weight:500;position:relative}
+.lang button{position:relative;z-index:1;padding:6px 12px;border-radius:99px;transition:color .4s}
+.lang .pill{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:99px;background:var(--brown);transition:transform .5s var(--ease)}
+.lang[data-on="en"] .pill{transform:translateX(100%)}
+.lang button.on{color:var(--paper)}
+.progress{position:fixed;top:0;left:0;height:2px;width:100%;background:var(--gold);transform-origin:left;transform:scaleX(0);z-index:60}
+
+/* HERO */
+.hero-wrap{position:relative;height:175vh}
+.hero{position:sticky;top:0;height:100vh;min-height:620px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center;gap:clamp(24px,5vw,90px);padding:90px var(--pad) 70px;overflow:hidden}
+.arch{position:relative;justify-self:end;width:min(36vw,480px);aspect-ratio:.78;border-radius:999px 999px 18px 18px;overflow:hidden;will-change:transform;box-shadow:0 40px 80px -40px rgba(75,47,33,.45)}
+.arch img{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;object-position:52% 18%;transform:scale(1.22);transition:transform 1.8s var(--ease)}
+.arch .cover{position:absolute;inset:0;background:var(--paper-3);transform-origin:top;transition:transform 1.3s var(--ease-io)}
+.arch-ring{position:absolute;inset:-14px;border:1px solid var(--gold-soft);border-radius:999px 999px 26px 26px;opacity:0;transform:scale(.96);transition:opacity 1.2s var(--ease) .6s,transform 1.4s var(--ease) .6s;pointer-events:none}
+.photo-col{position:relative;justify-self:end}
+.hero.in .arch .cover{transform:scaleY(0)}
+.hero.in .arch img{transform:scale(1)}
+.hero.in .arch-ring{opacity:.8;transform:none}
+
+.hero-text{max-width:640px;will-change:transform,opacity}
+.eyebrow{font-size:12px;letter-spacing:.32em;text-transform:uppercase;font-weight:500;color:var(--brown)}
+.eyebrow i{font-family:var(--serif);text-transform:none;letter-spacing:.01em;font-size:18px;font-weight:400;color:var(--muted);margin-left:10px}
+.name{font-family:var(--serif);font-weight:400;font-size:clamp(54px,7.4vw,124px);line-height:.92;letter-spacing:-.01em;margin:22px 0 26px;color:var(--ink)}
+.name em{font-style:italic;color:var(--brown)}
+.mask{display:block;overflow:hidden;padding-bottom:.08em}
+.mask>span{display:block;transform:translateY(110%);transition:transform 1.25s var(--ease)}
+.hero.in .mask>span{transform:none}
+.rule{width:90px;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform 1.2s var(--ease) .5s}
+.hero.in .rule{transform:scaleX(1)}
+.tagline{margin-top:26px;font-family:var(--serif);font-size:clamp(26px,2.6vw,38px);line-height:1.15;font-style:italic;color:var(--ink)}
+.tagline small{display:block;font-size:.62em;color:var(--muted);margin-top:6px}
+.fade{opacity:0;transform:translateY(18px);transition:opacity 1.1s var(--ease),transform 1.1s var(--ease)}
+.hero.in .fade{opacity:1;transform:none}
+.words{margin-top:34px;display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;font-weight:500;color:var(--brown)}
+.words .dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.slot{position:relative;height:1.6em;overflow:hidden;min-width:220px}
+.slot span{position:absolute;left:0;top:0;line-height:1.6em;transform:translateY(100%);opacity:0;transition:transform .8s var(--ease),opacity .8s}
+.slot span.cur{transform:none;opacity:1}
+.slot span.old{transform:translateY(-100%);opacity:0}
+.hero-foot{position:absolute;left:var(--pad);right:var(--pad);bottom:26px;display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:.3em;text-transform:uppercase;font-weight:500;color:var(--muted)}
+.scroll-cue{display:flex;align-items:center;gap:12px}
+.scroll-cue .ln{width:1px;height:38px;background:var(--line);position:relative;overflow:hidden}
+.scroll-cue .ln::after{content:"";position:absolute;left:0;top:-40%;width:1px;height:40%;background:var(--brown);animation:drip 2.2s var(--ease-io) infinite}
+@keyframes drip{to{top:110%}}
+.pair{display:flex;align-items:center;gap:10px}
+.pair svg{width:16px;height:16px}
+
+/* SECTIONS */
+section{position:relative;padding:clamp(90px,12vw,170px) var(--pad)}
+.panel{position:relative;z-index:2;margin-top:-34vh;background:var(--paper-2);border-radius:clamp(28px,4vw,56px) clamp(28px,4vw,56px) 0 0;box-shadow:0 -30px 60px -30px rgba(75,47,33,.25)}
+.label{display:flex;align-items:center;gap:16px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;font-weight:500;color:var(--brown);margin-bottom:clamp(36px,5vw,64px)}
+.label b{font-family:var(--serif);font-weight:400;font-style:italic;font-size:22px;letter-spacing:0;color:var(--gold)}
+.label .ln{flex:0 0 60px;height:1px;background:var(--gold)}
+h2{font-family:var(--serif);font-weight:400;font-size:clamp(52px,7vw,112px);line-height:.95;letter-spacing:-.01em}
+h2 em{font-style:italic;color:var(--gold)}
+.statement{font-family:var(--serif);font-size:clamp(30px,3.9vw,58px);line-height:1.14;max-width:1150px;letter-spacing:-.005em}
+.statement .w{color:var(--ink);opacity:.14;transition:opacity .35s}
+.statement .w.lit{opacity:1}
+.values{display:grid;grid-template-columns:repeat(3,1fr);margin-top:clamp(70px,9vw,120px);border-top:1px solid var(--line)}
+.value{padding:38px 34px 10px 0;position:relative}
+.value+.value{padding-left:34px;border-left:1px solid var(--line)}
+.value .n{font-size:12px;letter-spacing:.2em;color:var(--muted);font-weight:500}
+.value svg{width:46px;height:46px;stroke:var(--brown);stroke-width:1.2;fill:none;stroke-linecap:round;stroke-linejoin:round;margin:26px 0 22px;transition:transform .6s var(--ease),stroke .4s}
+.value:hover svg{transform:translateY(-4px) rotate(-4deg);stroke:var(--gold)}
+.value h3{font-family:var(--serif);font-weight:400;font-size:clamp(28px,2.4vw,36px);line-height:1.05}
+
+/* services */
+.services{background:var(--paper)}
+.svc-head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:clamp(40px,6vw,80px)}
+.svc-head p{max-width:340px;color:var(--muted);font-size:15px}
+.svc{border-top:1px solid var(--line)}
+.svc:last-child{border-bottom:1px solid var(--line)}
+.svc-row{width:100%;display:grid;grid-template-columns:70px 1fr auto;align-items:center;gap:20px;padding:30px 0;text-align:left;position:relative}
+.svc::before{content:"";position:absolute;inset:0 calc(-1 * var(--pad));background:var(--paper-2);transform:scaleY(0);transform-origin:bottom;transition:transform .6s var(--ease);z-index:-1}
+.svc{position:relative;z-index:0}
+.svc:hover::before,.svc.open::before{transform:scaleY(1)}
+.svc-row .n{font-size:12px;letter-spacing:.2em;color:var(--muted);font-weight:500}
+.svc-row .t{font-family:var(--serif);font-size:clamp(30px,3.6vw,54px);line-height:1;transition:transform .6s var(--ease),color .4s}
+.svc-row:hover .t{transform:translateX(14px)}
+.svc.open .svc-row .t{color:var(--brown)}
+.plus{width:46px;height:46px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;transition:background .4s,border-color .4s,transform .6s var(--ease)}
+.plus svg{width:14px;height:14px;stroke:var(--brown);stroke-width:1.5;transition:transform .6s var(--ease)}
+.svc.open .plus{background:var(--brown);border-color:var(--brown);transform:rotate(180deg)}
+.svc.open .plus svg{stroke:var(--paper);transform:rotate(45deg)}
+.svc-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .7s var(--ease)}
+.svc.open .svc-body{grid-template-rows:1fr}
+.svc-body>div{overflow:hidden}
+.svc-inner{padding:0 0 38px 90px;display:grid;grid-template-columns:1fr 1fr;gap:40px;opacity:0;transform:translateY(10px);transition:opacity .5s,transform .7s var(--ease)}
+.svc.open .svc-inner{opacity:1;transform:none;transition-delay:.15s}
+.svc-inner p{font-size:20px;color:var(--ink);max-width:460px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;align-content:flex-start}
+.chip{border:1px solid var(--line);border-radius:99px;padding:8px 16px;font-size:14px;background:rgba(255,255,255,.35)}
+.svc-inner ul{list-style:none;display:grid;gap:12px}
+.svc-inner li{display:flex;gap:12px;font-size:17px}
+.svc-inner li::before{content:"";flex:0 0 18px;height:1px;background:var(--gold);margin-top:.8em}
+
+/* band */
+.band{background:var(--ink);color:var(--paper);padding:clamp(70px,9vw,120px) 0;overflow:hidden}
+.marquee{display:flex;white-space:nowrap;font-family:var(--serif);font-size:clamp(64px,10vw,168px);line-height:1}
+.marquee .track{display:flex;flex-shrink:0;gap:.5em;padding-right:.5em;animation:mq 38s linear infinite}
+.marquee .track span{display:inline-flex;align-items:center;gap:.5em}
+.marquee em{font-style:italic;color:var(--gold-soft)}
+.marquee .ar{font-family:var(--sans);font-weight:300;font-size:.45em;color:var(--gold-soft)}
+.marquee .out{color:transparent;-webkit-text-stroke:1px rgba(244,237,228,.55)}
+@keyframes mq{to{transform:translateX(-100%)}}
+.band-keys{display:flex;justify-content:center;gap:clamp(18px,4vw,60px);flex-wrap:wrap;margin-top:clamp(40px,5vw,70px);padding:0 var(--pad);font-size:12px;letter-spacing:.32em;text-transform:uppercase;font-weight:500;color:rgba(244,237,228,.7)}
+.band-keys span{display:flex;align-items:center;gap:14px}
+.band-keys span::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--gold)}
+
+/* contact */
+.contact{background:var(--paper-2)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,7vw,120px);align-items:end}
+.contact .intro{font-size:19px;color:var(--ink);max-width:440px;margin-top:30px}
+.clock{margin-top:34px;display:inline-flex;align-items:center;gap:12px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;color:var(--muted)}
+.clock .live{width:8px;height:8px;border-radius:50%;background:#6F9A6B;box-shadow:0 0 0 0 rgba(111,154,107,.6);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(111,154,107,0)}100%{box-shadow:0 0 0 0 rgba(111,154,107,0)}}
+.c-list{border-top:1px solid var(--line)}
+.c-item{display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:18px;padding:26px 0;border-bottom:1px solid var(--line)}
+.c-ico{width:52px;height:52px;border-radius:50%;border:1px solid var(--gold-soft);display:grid;place-items:center;transition:background .4s,transform .6s var(--ease)}
+.c-ico svg{width:20px;height:20px;stroke:var(--brown);stroke-width:1.4;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:stroke .4s}
+.c-item:hover .c-ico{background:var(--brown);transform:rotate(-8deg)}
+.c-item:hover .c-ico svg{stroke:var(--paper)}
+.c-k{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.c-v{font-family:var(--sans);font-weight:400;font-size:clamp(18px,1.55vw,22px);line-height:1.35;letter-spacing:-.01em;word-break:break-word}
+.contact h2{font-family:var(--sans);font-weight:300;font-size:clamp(44px,5.6vw,84px);line-height:1;letter-spacing:-.045em}
+.contact h2 em{font-style:normal;color:var(--gold)}
+.contact .label b{font-family:var(--sans);font-style:normal;font-size:13px;letter-spacing:.2em;font-weight:500}
+.c-v small{display:block;font-family:var(--sans);font-size:14px;color:var(--muted)}
+.c-act{display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--brown);border-radius:99px;padding:10px 18px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;position:relative;overflow:hidden;isolation:isolate;transition:color .45s;white-space:nowrap}
+.btn::before{content:"";position:absolute;inset:0;background:var(--brown);transform:translateY(101%);transition:transform .5s var(--ease);z-index:-1}
+.btn:hover{color:var(--paper)}
+.btn:hover::before{transform:none}
+.btn.fill{background:var(--brown);color:var(--paper)}
+.btn.fill::before{background:var(--gold)}
+.big-cta{margin-top:40px;display:flex;gap:12px;flex-wrap:wrap}
+.big-cta .btn{padding:16px 26px;font-size:13px}
+
+footer{background:var(--paper-2);padding:40px var(--pad) 46px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--muted);border-top:1px solid var(--line)}
+footer .sig{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--brown)}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,30px);opacity:0;background:var(--ink);color:var(--paper);padding:12px 22px;border-radius:99px;font-size:13px;letter-spacing:.08em;z-index:95;transition:all .5s var(--ease);pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(40px);transition:opacity 1.1s var(--ease),transform 1.1s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.rv.d1{transition-delay:.12s}.rv.d2{transition-delay:.24s}.rv.d3{transition-delay:.36s}
+main{transition:opacity .35s}
+main.swap{opacity:0}
+
+/* responsive */
+@media (max-width:900px){
+  .nav .links{display:none}
+  .hero-wrap{height:auto}
+  .hero{position:relative;height:auto;min-height:100svh;grid-template-columns:1fr;gap:34px;padding-top:96px;padding-bottom:110px;text-align:left}
+  .photo-col{justify-self:center}
+  .arch{width:min(66vw,330px)}
+  .name{margin:16px 0 20px}
+  .eyebrow i{display:block;margin:6px 0 0}
+  .panel{margin-top:0}
+  .values{grid-template-columns:1fr}
+  .value,.value+.value{padding:32px 0 20px;border-left:0}
+  .value+.value{border-top:1px solid var(--line)}
+  .svc-row{grid-template-columns:40px 1fr auto;gap:12px;padding:24px 0}
+  .svc-inner{padding:0 0 30px 52px;grid-template-columns:1fr;gap:20px}
+  .contact-grid{grid-template-columns:1fr}
+  .c-item{grid-template-columns:44px 1fr;row-gap:14px}
+  .c-ico{width:44px;height:44px}
+  .c-act{grid-column:2}
+  .hero-foot .pair{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
+}
+</style>
+</head>
+<body class="loading">
+<div class="grain"></div>
+<div class="progress" id="progress"></div>
+
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="mono"><span class="p">P</span><span class="c">C</span><span class="bar"></span></div>
+</div>
+
+<nav class="nav" id="nav">
+  <a href="#top" aria-label="Início"><span class="mono sm"><span class="p">P</span><span class="c">C</span></span></a>
+  <div class="links">
+    <a href="#sobre" data-en="About">Sobre</a>
+    <a href="#servicos" data-en="Services">Serviços</a>
+    <a href="#contactos" data-en="Contact">Contactos</a>
+  </div>
+  <div class="lang" id="lang" data-on="pt" role="group" aria-label="Idioma / Language">
+    <span class="pill"></span>
+    <button class="on" data-l="pt">PT</button>
+    <button data-l="en">EN</button>
+  </div>
+</nav>
+
+<main id="main">
+<!-- HERO -->
+<div class="hero-wrap" id="top">
+  <header class="hero" id="hero">
+    <div class="photo-col" id="photoCol">
+      <div class="arch-ring"></div>
+      <div class="arch" id="arch">
+        <img src="portrait.webp" alt="Patrícia Correia Cassimo" id="heroImg">
+        <div class="cover"></div>
+      </div>
+    </div>
+    <div class="hero-text" id="heroText">
+      <div class="eyebrow fade" style="transition-delay:.35s">Tradutora Ajuramentada <i>Official Sworn Translator</i></div>
+      <h1 class="name">
+        <span class="mask"><span style="transition-delay:.15s">Patrícia</span></span>
+        <span class="mask"><span style="transition-delay:.25s"><em>Correia</em> Cassimo</span></span>
+      </h1>
+      <div class="rule"></div>
+      <p class="tagline fade" style="transition-delay:.6s">Do seu mundo para o mundo.<small>From your world to the world.</small></p>
+      <div class="words fade" style="transition-delay:.8s">
+        <span class="dot"></span>
+        <div class="slot" id="slot"></div>
+      </div>
+    </div>
+    <div class="hero-foot fade" style="transition-delay:1s">
+      <div class="scroll-cue"><span class="ln"></span><span data-en="Scroll">Explorar</span></div>
+      <div class="pair">Português
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M7 7h13l-3-3M17 17H4l3 3"/></svg>
+        Inglês</div>
+    </div>
+  </header>
+</div>
+
+<!-- ABOUT -->
+<section class="panel" id="sobre">
+  <div class="label rv"><b>01</b><span class="ln"></span><span data-en="Introduction">Apresentação</span></div>
+  <p class="statement" id="statement"
+     data-en="I am an Official Sworn Translator, specialised in translation, interpretation and language services, focused on accuracy, confidentiality and faithful rendering of the original document.">Sou Tradutora Ajuramentada, especializada em tradução, interpretação e assistência linguística, com foco na precisão, confidencialidade e fidelidade ao documento original.</p>
+
+  <div class="values">
+    <div class="value rv">
+      <div class="n">01</div>
+      <svg viewBox="0 0 24 24"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
+      <h3 data-en="Linguistic Precision">Rigor Linguístico</h3>
+    </div>
+    <div class="value rv d1">
+      <div class="n">02</div>
+      <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><path d="M12 15v2"/></svg>
+      <h3 data-en="Confidentiality">Confidencialidade</h3>
+    </div>
+    <div class="value rv d2">
+      <div class="n">03</div>
+      <svg viewBox="0 0 24 24"><path d="M2 12 6 8l4 2 3-2 3 1 6 3"/><path d="m22 12-4 4-2-1"/><path d="m2 12 6 6c.6.6 1.4.6 2 0"/><path d="m8 15 3 3c.6.6 1.4.6 2 0"/><path d="m10 13 4 4c.6.6 1.4.6 2 0l2-1"/><path d="M13 8 9.5 11.5c-.6.6-.4 1.6.4 1.9.5.2 1 .1 1.4-.2L14 11l4 3"/></svg>
+      <h3 data-en="Professional Commitment">Compromisso Profissional</h3>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="servicos">
+  <div class="label rv"><b>02</b><span class="ln"></span><span data-en="Services">Serviços</span></div>
+  <div class="svc-head">
+    <h2 class="rv" data-en="What I &lt;em&gt;do&lt;/em&gt;" data-html>O que <em>faço</em></h2>
+    <p class="rv d1" data-en="Portuguese ↔ English. Select a service to see the details.">Português ↔ Inglês. Selecione um serviço para ver os detalhes.</p>
+  </div>
+
+  <div class="svc-list" id="svcList">
+    <div class="svc open rv">
+      <button class="svc-row" aria-expanded="true"><span class="n">01</span><span class="t" data-en="Official Sworn Translation">Tradução Ajuramentada</span><span class="plus"><svg viewBox="0 0 14 14"><path d="M7 1v12M1 7h12"/></svg></span></button>
+      <div class="svc-body"><div><div class="svc-inner">
+        <p data-en="Translations with legal validity, accepted by official authorities.">Traduções com valor legal, aceites por entidades oficiais.</p>
+      </div></div></div>
+    </div>
+    <div class="svc rv">
+      <button class="svc-row" aria-expanded="false"><span class="n">02</span><span class="t" data-en="Technical &amp; General Translation">Tradução Técnica e Geral</span><span class="plus"><svg viewBox="0 0 14 14"><path d="M7 1v12M1 7h12"/></svg></span></button>
+      <div class="svc-body"><div><div class="svc-inner">
+        <p data-en="Legal, academic, corporate and personal documents.">Documentos jurídicos, académicos, empresariais e pessoais.</p>
+        <div class="chips"><span class="chip" data-en="Legal">Jurídicos</span><span class="chip" data-en="Academic">Académicos</span><span class="chip" data-en="Corporate">Empresariais</span><span class="chip" data-en="Personal">Pessoais</span></div>
+      </div></div></div>
+    </div>
+    <div class="svc rv">
+      <button class="svc-row" aria-expanded="false"><span class="n">03</span><span class="t" data-en="Interpretation">Interpretação</span><span class="plus"><svg viewBox="0 0 14 14"><path d="M7 1v12M1 7h12"/></svg></span></button>
+      <div class="svc-body"><div><div class="svc-inner">
+        <ul>
+          <li data-en="Simultaneous">Simultânea</li>
+          <li data-en="Consecutive">Consecutiva</li>
+          <li data-en="Remote / Virtual">Remota / Virtual</li>
+        </ul>
+      </div></div></div>
+    </div>
+    <div class="svc rv">
+      <button class="svc-row" aria-expanded="false"><span class="n">04</span><span class="t" data-en="Proofreading, Editing &amp; Writing">Revisão, Edição e Redacção</span><span class="plus"><svg viewBox="0 0 14 14"><path d="M7 1v12M1 7h12"/></svg></span></button>
+      <div class="svc-body"><div><div class="svc-inner">
+        <p data-en="Proofreading, text editing and writing support.">Revisão linguística, edição de textos e apoio na redacção.</p>
+      </div></div></div>
+    </div>
+    <div class="svc rv">
+      <button class="svc-row" aria-expanded="false"><span class="n">05</span><span class="t" data-en="Document Assistance">Assistência Documental</span><span class="plus"><svg viewBox="0 0 14 14"><path d="M7 1v12M1 7h12"/></svg></span></button>
+      <div class="svc-body"><div><div class="svc-inner">
+        <ul>
+          <li data-en="Scholarship applications">Processos de bolsas de estudo</li>
+          <li data-en="Academic recognition and equivalency">Homologações e equivalências</li>
+          <li data-en="Document legalisation and consular authentication">Legalização e autenticação consular</li>
+        </ul>
+      </div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- BAND -->
+<div class="band" aria-label="Português ↔ Inglês">
+  <div class="marquee" aria-hidden="true">
+    <div class="track">
+      <span>Português <span class="ar">↔</span> <em>English</em> <span class="ar">✦</span></span>
+      <span class="out">Inglês <span class="ar">↔</span> Portuguese</span><span class="ar">✦</span>
+      <span>Português <span class="ar">↔</span> <em>English</em> <span class="ar">✦</span></span>
+      <span class="out">Inglês <span class="ar">↔</span> Portuguese</span><span class="ar">✦</span>
+    </div>
+    <div class="track">
+      <span>Português <span class="ar">↔</span> <em>English</em> <span class="ar">✦</span></span>
+      <span class="out">Inglês <span class="ar">↔</span> Portuguese</span><span class="ar">✦</span>
+      <span>Português <span class="ar">↔</span> <em>English</em> <span class="ar">✦</span></span>
+      <span class="out">Inglês <span class="ar">↔</span> Portuguese</span><span class="ar">✦</span>
+    </div>
+  </div>
+  <div class="band-keys">
+    <span data-en="People">Pessoas</span><span data-en="Documents">Documentos</span><span data-en="Processes">Processos</span><span data-en="Opportunities">Oportunidades</span>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section class="contact" id="contactos">
+  <div class="label rv"><b>03</b><span class="ln"></span><span data-en="Contacts">Contactos</span></div>
+  <div class="contact-grid">
+    <div>
+      <h2 class="rv" data-en="Let’s &lt;em&gt;talk.&lt;/em&gt;" data-html>Vamos <em>conversar.</em></h2>
+      <p class="intro rv d1" data-en="Get in touch for translation, interpretation or language services enquiries.">Entre em contacto para pedidos de tradução, interpretação ou assistência linguística.</p>
+      <div class="big-cta rv d2">
+        <a class="btn fill" href="https://wa.me/258848796155" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.7-5A8.5 8.5 0 1 1 8 19.4Z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1.2-1.4-2-1-1 .8a4 4 0 0 1-2.1-2.1l.8-1-1-2Z"/></svg>
+          <span data-en="Message on WhatsApp">Falar no WhatsApp</span></a>
+        <a class="btn" href="mailto:patriciacassimo12@gmail.com" data-en="Send an email">Enviar email</a>
+      </div>
+      <div class="clock rv d3"><span class="live"></span><span id="clock">Maputo</span></div>
+    </div>
+    <div class="c-list">
+      <div class="c-item rv">
+        <span class="c-ico"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z"/></svg></span>
+        <div><div class="c-k" data-en="Phone · WhatsApp">Telefone · WhatsApp</div><a class="c-v" href="tel:+258848796155">+258 84 879 6155</a></div>
+        <div class="c-act"><button class="btn" data-copy="+258 84 879 6155" data-en="Copy">Copiar</button></div>
+      </div>
+      <div class="c-item rv d1">
+        <span class="c-ico"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></span>
+        <div><div class="c-k">Email</div><a class="c-v" href="mailto:patriciacassimo12@gmail.com">patriciacassimo12<wbr>@gmail.com</a></div>
+        <div class="c-act"><button class="btn" data-copy="patriciacassimo12@gmail.com" data-en="Copy">Copiar</button></div>
+      </div>
+      <div class="c-item rv d2">
+        <span class="c-ico"><svg viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+        <div><div class="c-k" data-en="Based in">Localização</div><div class="c-v"><span data-en="Maputo, Mozambique">Maputo, Moçambique</span><small data-en="Available remotely worldwide">Disponível remotamente para todo o mundo</small></div></div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <span class="mono sm"><span class="p">P</span><span class="c">C</span></span>
+  <span class="sig">Do seu mundo para o mundo.</span>
+  <span>© <span id="yr"></span> Patrícia Correia Cassimo</span>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let lang = 'pt';
+  try { const s = localStorage.getItem('pcc-lang'); if (s === 'en' || s === 'pt') lang = s; } catch (e) {}
+
+  /* ---------- i18n ---------- */
+  $$('[data-en]').forEach(el => { el.dataset.pt = el.dataset.html !== undefined ? el.innerHTML : el.textContent; });
+  const words = { pt: ['Pessoas', 'Documentos', 'Processos', 'Oportunidades'], en: ['People', 'Documents', 'Processes', 'Opportunities'] };
+
+  function applyLang(l) {
+    lang = l;
+    document.documentElement.lang = l;
+    $$('[data-en]').forEach(el => {
+      const v = el.dataset[l];
+      if (el.dataset.html !== undefined) el.innerHTML = v; else el.textContent = v;
+    });
+    $('#lang').dataset.on = l;
+    $$('#lang button').forEach(b => b.classList.toggle('on', b.dataset.l === l));
+    splitStatement(); buildSlot(); tickClock();
+    try { localStorage.setItem('pcc-lang', l); } catch (e) {}
+  }
+  $$('#lang button').forEach(b => b.addEventListener('click', () => {
+    if (b.dataset.l === lang) return;
+    const m = $('#main'); m.classList.add('swap');
+    setTimeout(() => { applyLang(b.dataset.l); m.classList.remove('swap'); onScroll(); }, 320);
+  }));
+
+  /* ---------- statement word reveal ---------- */
+  const st = $('#statement');
+  function splitStatement() {
+    const t = st.textContent.trim();
+    st.innerHTML = t.split(/\s+/).map(w => `<span class="w">${w}</span> `).join('');
+  }
+
+  /* ---------- rotating keywords ---------- */
+  const slot = $('#slot'); let wi = 0, wTimer;
+  function buildSlot() {
+    slot.innerHTML = words[lang].map(w => `<span>${w}</span>`).join('');
+    wi = 0; slot.children[0].classList.add('cur');
+  }
+  function nextWord() {
+    const k = slot.children, cur = k[wi];
+    cur.classList.remove('cur'); cur.classList.add('old');
+    setTimeout(() => cur.classList.remove('old'), 820);
+    wi = (wi + 1) % k.length; k[wi].classList.add('cur');
+  }
+
+  /* ---------- clock ---------- */
+  function tickClock() {
+    try {
+      const t = new Intl.DateTimeFormat(lang === 'pt' ? 'pt-PT' : 'en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Maputo' }).format(new Date());
+      $('#clock').textContent = (lang === 'pt' ? 'Maputo · agora ' : 'Maputo · now ') + t + ' (CAT)';
+    } catch (e) {}
+  }
+  setInterval(tickClock, 20000);
+  $('#yr').textContent = new Date().getFullYear();
+
+  /* ---------- intro sequence ---------- */
+  const loader = $('#loader'), hero = $('#hero');
+  function start() {
+    loader.classList.add('out');
+    document.body.classList.remove('loading');
+    setTimeout(() => hero.classList.add('in'), reduce ? 0 : 250);
+    setTimeout(() => { loader.remove(); }, 1300);
+    wTimer = setInterval(nextWord, 2400);
+  }
+  applyLang(lang);
+  if (reduce) start();
+  else window.addEventListener('load', () => setTimeout(start, 1150));
+  setTimeout(() => { if (document.body.classList.contains('loading')) start(); }, 3500); // safety
+
+  /* ---------- scroll-linked ---------- */
+  const wrap = $('.hero-wrap'), arch = $('#photoCol'), text = $('#heroText'), nav = $('#nav'), bar = $('#progress');
+  const desktop = () => innerWidth > 900;
+  let ticking = false;
+  function onScroll() {
+    const y = scrollY, H = document.documentElement.scrollHeight - innerHeight;
+    bar.style.transform = `scaleX(${H > 0 ? y / H : 0})`;
+    nav.classList.toggle('solid', y > innerHeight * .6);
+    if (desktop() && !reduce) {
+      const r = wrap.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, -r.top / (r.height - innerHeight)));
+      arch.style.transform = `translateY(${p * -50}px) scale(${1 - p * .14})`;
+      text.style.transform = `translateY(${p * -90}px)`;
+      text.style.opacity = Math.max(0, 1 - p * 1.15);
+    } else { arch.style.transform = ''; text.style.transform = ''; text.style.opacity = ''; }
+    // statement words
+    const sr = st.getBoundingClientRect();
+    const sp = Math.min(1, Math.max(0, (innerHeight * .85 - sr.top) / (sr.height + innerHeight * .35)));
+    const ws = st.children, n = Math.round(sp * ws.length);
+    for (let i = 0; i < ws.length; i++) ws[i].classList.toggle('lit', reduce || i < n);
+    ticking = false;
+  }
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  addEventListener('resize', onScroll);
+  onScroll();
+
+  /* pointer parallax on portrait */
+  const img = $('#heroImg');
+  if (!reduce && matchMedia('(pointer:fine)').matches) {
+    hero.addEventListener('pointermove', e => {
+      const x = e.clientX / innerWidth - .5, yv = e.clientY / innerHeight - .5;
+      img.style.translate = `${x * -16}px ${yv * -12}px`;
+    });
+  }
+
+  /* reveal on view */
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .15 });
+  $$('.rv').forEach(el => io.observe(el));
+
+  /* services accordion */
+  $$('.svc').forEach(s => $('.svc-row', s).addEventListener('click', () => {
+    const open = s.classList.contains('open');
+    $$('.svc').forEach(o => { o.classList.remove('open'); $('.svc-row', o).setAttribute('aria-expanded', 'false'); });
+    if (!open) { s.classList.add('open'); $('.svc-row', s).setAttribute('aria-expanded', 'true'); }
+  }));
+
+  /* copy buttons */
+  const toast = $('#toast'); let tt;
+  function showToast(m) { toast.textContent = m; toast.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => toast.classList.remove('show'), 1900); }
+  $$('[data-copy]').forEach(b => b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); showToast(lang === 'pt' ? 'Copiado ✓' : 'Copied ✓'); }
+    catch (e) { showToast(b.dataset.copy); }
+  }));
+})();
+</script>
+</body>
+</html>
